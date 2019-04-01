@@ -14,3 +14,5 @@ CREATE TABLE products (
 
 SELECT * FROM products;
 
+INSERT INTO products (product_name, depatrment_name, price, stock_quantity)
+VALUES ("Hat", Clothing, 12.50, 100), ("Gloves", Clothing, 10.00, 100), ("TV", Electronics, 500, 25),
