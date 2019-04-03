@@ -15,19 +15,16 @@ connection.connect(function(err) {
   startCustomer();
 });
 
-// show inventory
-// prompt the customer with two questions
-
 function startCustomer() {
   connection.query("SELECT * FROM products", function(err, result) {
     if (err) throw err;
     console.log("Welcome to Bamazon! On sale today:");
     console.table(result);
-    sale();
+    cart();
   });
 }
 
-function sale() {
+function cart() {
   inquirer
     .prompt([
       {
@@ -51,10 +48,35 @@ function sale() {
             if (stockcheck.qty > result[i].stock_quantity) {
               console.log("Sorry, not enough in stock, please try again");
             } else {
-              console.log("Added to cart");
+              console.log("Added to your cart:");
+              console.log("Item: " + result[i].product_name);
+              console.log("Quantity: " + stockcheck.qty);
+              console.log("Price: " + result[i].price);
+              console.log("Total: " + result[i].price * stockcheck.qty);
+
+              checkout();
             }
           }
         }
       );
+    });
+}
+
+function checkout() {
+  inquirer
+    .prompt([
+      {
+        type: "confirm",
+        message: "Please confirm your purchase",
+        name: "confirm",
+        default: true
+      }
+    ])
+    .then(function(confirm) {
+      if (confirm.confirm === true) {
+        console.log("Your purchase is on it's way");
+      } else {
+        console.log("Ok, come again");
+      }
     });
 }
