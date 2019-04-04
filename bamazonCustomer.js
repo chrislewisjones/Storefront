@@ -54,7 +54,10 @@ function cart() {
               console.log("Price: " + result[i].price);
               console.log("Total: " + result[i].price * stockcheck.qty);
 
-              checkout();
+              var purchaseId = stockcheck.id;
+              var newQty = result[i].stock_quantity - stockcheck.qty;
+
+              checkout(purchaseId, newQty);
             }
           }
         }
@@ -62,7 +65,7 @@ function cart() {
     });
 }
 
-function checkout() {
+function checkout(purchaseId, newQty) {
   inquirer
     .prompt([
       {
@@ -74,7 +77,20 @@ function checkout() {
     ])
     .then(function(confirm) {
       if (confirm.confirm === true) {
+        connection.query(
+          "UPDATE products SET ? WHERE ?",
+          [
+            {
+              stock_quantity: newQty
+            },
+            {
+              item_id: purchaseId
+            }
+          ],
+          function(err, res) {}
+        );
         console.log("Your purchase is on it's way");
+        startCustomer();
       } else {
         console.log("Ok, come again");
       }
