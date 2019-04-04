@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("cli-table");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -19,9 +20,27 @@ function startCustomer() {
   connection.query("SELECT * FROM products", function(err, result) {
     if (err) throw err;
     console.log("Welcome to Bamazon! On sale today:");
-    console.table(result);
+    // console.table(result);
+    renderTable(result);
     cart();
   });
+}
+
+function renderTable(result) {
+  var table = new Table({
+    head: ["ID", "Item", "Department", "Price", "Stock"],
+    colWidths: [5, 25, 25, 10, 10]
+  });
+  for (var item of result) {
+    table.push([
+      item.item_id,
+      item.product_name,
+      item.department_name,
+      "$" + item.price.toFixed(2),
+      item.stock_quantity
+    ]);
+  }
+  console.log(table.toString());
 }
 
 function cart() {
@@ -90,9 +109,30 @@ function checkout(purchaseId, newQty) {
           function(err, res) {}
         );
         console.log("Your purchase is on it's way");
-        startCustomer();
+        proceed();
       } else {
         console.log("Ok, come again");
+      }
+    });
+}
+
+function proceed() {
+  inquirer
+    .prompt([
+      {
+        type: "confirm",
+        message: "Would you like to continue shopping?",
+        name: "proceed",
+        default: true
+      }
+    ])
+    .then(function(proceed) {
+      if (proceed.proceed === true) {
+        startCustomer();
+      } else {
+        process.stdout.write("\033c");
+        console.log("Thank you, come again!");
+        process.exit();
       }
     });
 }

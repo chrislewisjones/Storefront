@@ -19,6 +19,7 @@
   "homepage": "https://github.com/chrislewisjones/Storefront#readme",
   "dependencies": {
     "chalk": "^2.4.2",
+    "cli-table": "^0.3.1",
     "console.table": "^0.10.0",
     "inquirer": "^6.2.2",
     "mysql": "^2.16.0",
