@@ -15,6 +15,8 @@ CREATE TABLE products (
 SELECT * FROM products;
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)
-VALUES ("Hat", Clothing, 12.50, 100), 
-("Gloves", Clothing, 10.00, 100), 
-("TV", Electronics, 500, 25);
+VALUES ("Coffee", "Beverages", 12.50, 100), 
+("Milk", "Dairy", 5.95, 100), 
+("Bread", "Bakery", 2, 200),
+("Dog Food", "Pet Supplies", 30, 25),
+("Heroin", "Pharmaceuticals", 50, 8);

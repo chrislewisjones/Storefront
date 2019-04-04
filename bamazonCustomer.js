@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
+const chalk = require("chalk");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -19,8 +20,7 @@ connection.connect(function(err) {
 function startCustomer() {
   connection.query("SELECT * FROM products", function(err, result) {
     if (err) throw err;
-    console.log("Welcome to Bamazon! On sale today:");
-    // console.table(result);
+    console.log(chalk.blue.bold("Welcome to Bamazon! On sale today:"));
     renderTable(result);
     cart();
   });
@@ -29,7 +29,8 @@ function startCustomer() {
 function renderTable(result) {
   var table = new Table({
     head: ["ID", "Item", "Department", "Price", "Stock"],
-    colWidths: [5, 25, 25, 10, 10]
+    colWidths: [5, 25, 25, 10, 10],
+    style: { head: ["green"] }
   });
   for (var item of result) {
     table.push([
@@ -65,13 +66,21 @@ function cart() {
         function(err, result) {
           for (var i = 0; i < result.length; i++) {
             if (stockcheck.qty > result[i].stock_quantity) {
-              console.log("Sorry, not enough in stock, please try again");
+              console.log(
+                chalk.red.bold("Sorry, not enough in stock, please try again")
+              );
+              proceed();
             } else {
-              console.log("Added to your cart:");
+              console.log("========================");
+              console.log(chalk.green.bold("Added to your cart:"));
               console.log("Item: " + result[i].product_name);
               console.log("Quantity: " + stockcheck.qty);
-              console.log("Price: " + result[i].price);
-              console.log("Total: " + result[i].price * stockcheck.qty);
+              console.log("Price: " + "$" + result[i].price.toFixed(2));
+              console.log("------------------------");
+              console.log(
+                "Total: " + "$" + (result[i].price * stockcheck.qty).toFixed(2)
+              );
+              console.log("========================");
 
               var purchaseId = stockcheck.id;
               var newQty = result[i].stock_quantity - stockcheck.qty;
@@ -108,10 +117,11 @@ function checkout(purchaseId, newQty) {
           ],
           function(err, res) {}
         );
-        console.log("Your purchase is on it's way");
+        console.log(chalk.green.bold("Your purchase is on it's way"));
         proceed();
       } else {
-        console.log("Ok, come again");
+        console.log(chalk.red.bold("Your cart has been emptied"));
+        proceed();
       }
     });
 }
@@ -131,7 +141,7 @@ function proceed() {
         startCustomer();
       } else {
         process.stdout.write("\033c");
-        console.log("Thank you, come again!");
+        console.log("Thank you, please come back soon!");
         process.exit();
       }
     });
