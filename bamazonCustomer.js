@@ -1,8 +1,10 @@
+//Require everything needed
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 const chalk = require("chalk");
 
+// Connection to the mysql db
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -17,6 +19,7 @@ connection.connect(function(err) {
   startCustomer();
 });
 
+// start function, connects and welcomes user to the store, calls the render table function
 function startCustomer() {
   connection.query("SELECT * FROM products", function(err, result) {
     if (err) throw err;
@@ -26,6 +29,7 @@ function startCustomer() {
   });
 }
 
+// renders a table of in stock items by ID
 function renderTable(result) {
   var table = new Table({
     head: ["ID", "Item", "Department", "Price", "Stock"],
@@ -44,6 +48,7 @@ function renderTable(result) {
   console.log(table.toString());
 }
 
+// user is asked 2 questions, the answers are then put through a stock check to make sure qty is available.
 function cart() {
   inquirer
     .prompt([
@@ -93,6 +98,8 @@ function cart() {
     });
 }
 
+// checkout from the cart, user confirms purchase.   Inventory in sql is updated.
+
 function checkout(purchaseId, newQty) {
   inquirer
     .prompt([
@@ -125,6 +132,8 @@ function checkout(purchaseId, newQty) {
       }
     });
 }
+
+// function to continue or leave the store
 
 function proceed() {
   inquirer
